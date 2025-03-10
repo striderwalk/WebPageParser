@@ -1,13 +1,9 @@
 |
-[next->](0003-decision-3.md)
+[next->](0003-puncutation-and-case.md)
 
 # 1. Record architecture decisions
 
 Date: 2025-Mar-10
-
-## Status
-
-Accepted
 
 ## Context
 

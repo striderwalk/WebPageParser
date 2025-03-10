@@ -1,4 +1,5 @@
 import os
+import matplotlib.pyplot as plt
 
 
 class UI:
@@ -53,3 +54,14 @@ class UI:
                 print("Invalid choice. Please try again.")
 
         return int(choice)
+
+    def display_plot(self, freqencies):
+
+        words = [i[0] for i in freqencies]
+        counts = [i[1] for i in freqencies]
+        plt.bar(range(len(words)), counts)
+        plt.xticks(range(len(words)), words, rotation=90)
+
+        plt.legend(title="Word Frequencys")
+
+        plt.show()

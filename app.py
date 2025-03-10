@@ -45,8 +45,8 @@ class App:
                 self.display_frequencys()
 
             if choice == 2:
-                self.app_ui.clear()
-                self.app_ui.display_text("PLOT")
+                self.display_plot()
+
                 input()
 
             if choice == 3:
@@ -59,6 +59,8 @@ class App:
 
         reorder_choice = self.app_ui.reorder_options()
         while True:
+            self.app_ui.clear()
+
             if reorder_choice == 1:
                 frequencys = sorted(frequencys, key=lambda x: x[1], reverse=True)
 
@@ -75,9 +77,15 @@ class App:
                 return
 
             for word, frequency in frequencys:
-                self.app_ui.display_text(f"{word}: {frequency}")
+
+                self.app_ui.display_text(f"{word: <20}\t{frequency: > 5}")
 
             reorder_choice = self.app_ui.reorder_options()
+
+    def display_plot(self):
+        frequencys = self.parser.get_frequencys()
+        frequencys = sorted(frequencys, key=lambda x: x[1], reverse=True)
+        self.app_ui.display_plot(frequencys)
 
 
 if __name__ == "__main__":

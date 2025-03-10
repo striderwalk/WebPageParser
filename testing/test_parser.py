@@ -10,8 +10,8 @@ def test_empty_body():
 
 def test_body_with_text():
     assert (
-        parser.HTMLparser("<body>abcd!wadjp/z/\n\t12093</body>").body
-        == "abcd!wadjp/z/\n\t12093"
+        parser.HTMLparser("<body>abcd!wadjpz\n\t12093</body>").body
+        == "abcdwadjpz\n\t12093"
     )
 
 
@@ -36,4 +36,11 @@ def test_multiline_tag():
             </body>"""
         ).body
         == "test"
+    )
+
+
+def test_apostrophe_in_text():
+    assert (
+        parser.HTMLparser("<body>The fella's friend's is lookin' good!</body>").body
+        == "The fella's friend's is lookin' good"
     )

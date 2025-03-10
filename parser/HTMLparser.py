@@ -1,3 +1,4 @@
+from collections import Counter
 import re
 import string
 
@@ -22,7 +23,10 @@ class HTMLparser:
         self.body = re.sub(r"\n\s*\n", "\n", self.body, flags=re.DOTALL)
 
         # Remove punctuation
-        self.body = self.body.translate(str.maketrans("", "", string.punctuation))
+        transtable = str.maketrans("", "", string.punctuation)
+        transtable[ord("'")] = ord("'")
+
+        self.body = self.body.translate(transtable)
 
         self.lines = [line for line in self.body.split("\n") if line]
 
@@ -46,12 +50,19 @@ class HTMLparser:
     def get_frequencys(self):
         word_freq = {}
         for word in self.getwords():
-            if word not in word_freq:
-                word_freq[word] = 1
+            if word.lower() not in word_freq:
+                word_freq[word.lower()] = [word]
             else:
-                word_freq[word] = word_freq[word] + 1
+                word_freq[word.lower()] = word_freq[word.lower()] + [word]
 
-        return word_freq.items()
+        word_freq_common_case = []
+        for word_list in sorted(word_freq.values(), key=lambda x: x[0].lower()):
+
+            data = Counter(word_list)
+            # print(data.most_common(1))
+            word_freq_common_case.append((data.most_common(1)[0][0], len(word_list)))
+            # print(word_freq_common_case[-1])
+        return word_freq_common_case
 
     def __repr__(self):
         return f"HTMLparser('{self.file_path}')"
