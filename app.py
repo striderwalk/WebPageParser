@@ -13,9 +13,13 @@ class App:
         self.app_ui.clear()
         # If the file isn't specified in the command line promt user
         if not (filepath := self.check_args()):
-            self.app_ui.get_filepath()
+            filepath = self.app_ui.get_filepath()
 
-        self.fileparser = parser.HTMLparser(filepath)
+        with open(filepath, "r") as file:
+
+            text = file.read()
+
+        self.parser = parser.HTMLparser(text)
 
         self.run()
 
@@ -33,12 +37,12 @@ class App:
 
     def run(self):
         while True:
+            self.app_ui.clear()
+
             choice = self.app_ui.user_options()
 
             if choice == 1:
-                self.app_ui.clear()
-                self.app_ui.display_text(self.fileparser.get_frequencys())
-                input()
+                self.display_frequencys()
 
             if choice == 2:
                 self.app_ui.clear()
@@ -47,6 +51,33 @@ class App:
 
             if choice == 3:
                 exit()
+
+    def display_frequencys(self):
+        self.app_ui.clear()
+
+        frequencys = self.parser.get_frequencys()
+
+        reorder_choice = self.app_ui.reorder_options()
+        while True:
+            if reorder_choice == 1:
+                frequencys = sorted(frequencys, key=lambda x: x[1], reverse=True)
+
+            if reorder_choice == 2:
+                frequencys = sorted(frequencys, key=lambda x: x[1])
+
+            if reorder_choice == 3:
+                frequencys = sorted(frequencys, key=lambda x: x[0])
+
+            if reorder_choice == 4:
+                frequencys = sorted(frequencys, key=lambda x: x[0], reverse=True)
+
+            if reorder_choice == 5:
+                return
+
+            for word, frequency in frequencys:
+                self.app_ui.display_text(f"{word}: {frequency}")
+
+            reorder_choice = self.app_ui.reorder_options()
 
 
 if __name__ == "__main__":
