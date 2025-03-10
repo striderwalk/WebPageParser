@@ -1,6 +1,8 @@
 import argparse
 import os
+
 import parser
+import ui
 
 
 def get_filepath():
@@ -19,7 +21,8 @@ def main():
     filepath = get_filepath()
     fileparser = parser.HTMLparser(filepath)
 
-    print(fileparser)
+    app_ui = ui.UI(fileparser)
+    app_ui.run()
 
 
 if __name__ == "__main__":
