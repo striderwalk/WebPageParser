@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Interactive Web Page</title>
+    <style>
+      body {
+        font-family: "Trebuchet MS", sans-serif;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+        margin: 0;
+      }
+      .container {
+        background: white;
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        text-align: center;
+        transition: transform 0.3s;
+        width: 60%;
+      }
+      .container:hover {
+        transform: scale(1.05);
+      }
+      .btn {
+        background: #28a745;
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        cursor: pointer;
+        border-radius: 8px;
+        font-size: 16px;
+        margin-top: 10px;
+      }
+      .btn:hover {
+        background: #218838;
+      }
+      .input-box,
+      .quote-box {
+        margin-top: 15px;
+      }
+      input[type="text"] {
+        padding: 10px;
+        width: 80%;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        margin-top: 5px;
+      }
+      .output {
+        margin-top: 20px;
+        font-size: 18px;
+        font-weight: bold;
+      }
+      .quote {
+        font-style: italic;
+        margin-top: 20px;
+        font-size: 20px;
+        color: #555;
+      }
+    </style>
+    <script>
+      function changeColor() {
+        document.body.style.background =
+          "linear-gradient(135deg, #a18cd1, #fbc2eb)";
+      }
+      function displayText() {
+        let inputText = document.getElementById("userInput").value;
+        document.getElementById("outputText").innerText =
+          "You entered: " + inputText;
+      }
+      function showQuote() {
+        const quotes = [
+          "The only limit to our realization of tomorrow is our doubts of today.",
+          "Do what you can, with what you have, where you are.",
+          "Success is not final, failure is not fatal: it is the courage to continue that counts.",
+          "Believe you can and you're halfway there.",
+        ];
+        let randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+        document.getElementById("quoteText").innerText = randomQuote;
+      }
+    </script>
+  </head>
+  <body>
+    <div class="container">
+      <h2>Interactive Web Page</h2>
+      <p>Click the button to change the background color!</p>
+      <button class="btn" onclick="changeColor()">Change Color</button>
+
+      <div class="input-box">
+        <p>Enter some text below:</p>
+        <input type="text" id="userInput" placeholder="Type something..." />
+        <button class="btn" onclick="displayText()">Submit</button>
+      </div>
+
+      <div class="output" id="outputText"></div>
+
+      <div class="quote-box">
+        <p>Need some inspiration?</p>
+        <button class="btn" onclick="showQuote()">Show Random Quote</button>
+        <p class="quote" id="quoteText"></p>
+      </div>
+    </div>
+  </body>
+</html>

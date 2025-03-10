@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Interactive HTML Page</title>
+    <style>
+      body {
+        font-family: "Trebuchet MS", sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+      }
+      .card {
+        background: white;
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        text-align: center;
+        transition: transform 0.3s;
+      }
+      .card:hover {
+        transform: scale(1.05);
+      }
+      .btn {
+        background: #28a745;
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        cursor: pointer;
+        border-radius: 8px;
+        font-size: 16px;
+      }
+      .btn:hover {
+        background: #04cd30;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <h2>Interactive HTML Demo</h2>
+      <p>Click the button to change the background color!</p>
+      <button
+        class="btn"
+        onclick="document.body.style.background = 'linear-gradient(135deg, #a18cd1, #fbc2eb)';"
+      >
+        Change Color
+      </button>
+    </div>
+  </body>
+</html>
