@@ -95,7 +95,7 @@ class App:
                 with open(filename, "w") as file:
                     for word, frequency in frequencys:
 
-                        file.writelines(f"{word}\t{frequency}")
+                        file.write(f"{word}\t{frequency}\n")
 
                 self.app_ui.clear()
                 self.app_ui.display_text(f"Saved to {filename}")

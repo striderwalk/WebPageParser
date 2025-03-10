@@ -36,7 +36,7 @@ class UI:
             print(f"\t{i+1}. {option}")
 
         choice = 0
-        while choice < 1 or choice >= len(options):
+        while choice < 1 or choice > len(options):
             choice = input(f"Enter your choice (1-{len(options)}): ").strip()
 
             if not choice.isdecimal():
@@ -45,7 +45,7 @@ class UI:
                 continue
 
             choice = int(choice)
-            if choice < 1 or choice >= len(options):
+            if choice < 1 or choice > len(options):
 
                 print("Invalid choice, Please try again.")
         return int(choice)
@@ -67,7 +67,7 @@ class UI:
                 print(f"\t{i+1}. {option}")
 
         choice = 0
-        while choice < 1 or choice >= len(options):
+        while choice < 1 or choice > len(options):
             choice = input(f"Enter your choice (1-{len(options)}): ").strip()
 
             if not choice.isdecimal():
@@ -76,7 +76,7 @@ class UI:
                 continue
 
             choice = int(choice)
-            if choice < 1 or choice >= len(options):
+            if choice < 1 or choice > len(options):
 
                 print("Invalid choice, Please try again.")
         return int(choice)
