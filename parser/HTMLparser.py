@@ -49,7 +49,7 @@ class HTMLparser:
 
     def get_frequencys(self):
         word_freq = {}
-        for word in self.getwords():
+        for word in self.get_words():
             if word.lower() not in word_freq:
                 word_freq[word.lower()] = [word]
             else:
@@ -59,9 +59,8 @@ class HTMLparser:
         for word_list in sorted(word_freq.values(), key=lambda x: x[0].lower()):
 
             data = Counter(word_list)
-            # print(data.most_common(1))
             word_freq_common_case.append((data.most_common(1)[0][0], len(word_list)))
-            # print(word_freq_common_case[-1])
+
         return word_freq_common_case
 
     def __repr__(self):

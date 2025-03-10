@@ -24,41 +24,64 @@ class UI:
         return filepath
 
     def user_options(self):
+        options = [
+            "Display words by frequency",
+            "Display word length plot",
+            "Display word length occurrences",
+            "Exit",
+        ]
         print("\nSelect an option:")
-        print("\t1. Display words by frequency")
-        print("\t2. Display word length plot")
-        print("\t3. Display word length occurrences")
-        print("\t4. Exit")
+        for i, option in enumerate(options):
 
-        choice = None
-        while choice not in ["1", "2", "3", "4"]:
-            choice = input("Enter your choice (1-4): ").strip()
+            print(f"\t{i+1}. {option}")
 
-            if choice not in ["1", "2", "3", "4"]:
-                print("Invalid choice. Please try again.")
+        choice = 0
+        while choice < 1 or choice >= len(options):
+            choice = input(f"Enter your choice (1-{len(options)}): ").strip()
 
+            if not choice.isdecimal():
+                print("Invalid choice, Please enter a number.")
+                choice = 0
+                continue
+
+            choice = int(choice)
+            if choice < 1 or choice >= len(options):
+
+                print("Invalid choice, Please try again.")
         return int(choice)
 
-    def reorder_options(self):
+    def reorder_options(self, current):
+        options = [
+            "Frequency order",
+            "Reverse frequency order",
+            "Alphabetical order",
+            "Reverse alphabetical order",
+            "Save current",
+            "Exit",
+        ]
         print("\nOrder options:")
-        print("\t1. Frequency order")
-        print("\t2. Reverse frequency order")
-        print("\t3. Alphabetical order")
-        print("\t4. Reverse alphabetical order")
-        print("\t5. Exit")
+        for i, option in enumerate(options):
+            if current == i + 1:
+                print(f"\t\u001b[33;1m{i+1}. {option}\u001b[0m")
+            else:
+                print(f"\t{i+1}. {option}")
 
-        choice = None
-        while choice not in ["1", "2", "3", "4", "5"]:
-            choice = input("Enter your choice (1-5): ").strip()
+        choice = 0
+        while choice < 1 or choice >= len(options):
+            choice = input(f"Enter your choice (1-{len(options)}): ").strip()
 
-            if choice not in ["1", "2", "3", "4", "5"]:
-                print("Invalid choice. Please try again.")
+            if not choice.isdecimal():
+                print("Invalid choice, Please enter a number.")
+                choice = 0
+                continue
 
+            choice = int(choice)
+            if choice < 1 or choice >= len(options):
+
+                print("Invalid choice, Please try again.")
         return int(choice)
 
     def display_word_length(self, lengths):
-
-        # import matplotlib.pyplot as plt
 
         plt.hist(lengths, color="lightgreen", ec="black", bins=15)
         plt.show()
