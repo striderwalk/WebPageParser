@@ -39,11 +39,11 @@ class HTMLparser:
         # Remove leading/trailing whitespace
         self.lines = [line.strip() for line in self.lines]
 
-    def getlines(self):
+    def get_lines(self):
         # Returns a generator for each line
         yield from self.lines
 
-    def getwords(self):
+    def get_words(self):
         # Returns a generator for each word
         yield from [word for word in self.body.replace("\n", "").split(" ") if word]
 

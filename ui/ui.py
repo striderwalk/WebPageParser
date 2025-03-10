@@ -26,14 +26,15 @@ class UI:
     def user_options(self):
         print("\nSelect an option:")
         print("\t1. Display words by frequency")
-        print("\t2. Display plot")
-        print("\t3. Exit")
+        print("\t2. Display word length plot")
+        print("\t3. Display word length occurrences")
+        print("\t4. Exit")
 
         choice = None
-        while choice not in ["1", "2", "3"]:
-            choice = input("Enter your choice (1-3): ").strip()
+        while choice not in ["1", "2", "3", "4"]:
+            choice = input("Enter your choice (1-4): ").strip()
 
-            if choice not in ["1", "2", "3"]:
+            if choice not in ["1", "2", "3", "4"]:
                 print("Invalid choice. Please try again.")
 
         return int(choice)
@@ -55,13 +56,13 @@ class UI:
 
         return int(choice)
 
-    def display_plot(self, freqencies):
+    def display_word_length(self, lengths):
 
-        words = [i[0] for i in freqencies]
-        counts = [i[1] for i in freqencies]
-        plt.bar(range(len(words)), counts)
-        plt.xticks(range(len(words)), words, rotation=90)
+        # import matplotlib.pyplot as plt
 
-        plt.legend(title="Word Frequencys")
+        plt.hist(lengths, color="lightgreen", ec="black", bins=15)
+        plt.show()
 
+    def display_word_length_groupped(self, groups, bins):
+        plt.bar(groups, bins)
         plt.show()

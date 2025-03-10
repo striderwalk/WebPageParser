@@ -16,7 +16,6 @@ def test_body_with_text():
 
 
 def test_empty_text():
-    print("hi")
 
     assert parser.HTMLparser("").body == ""
 
