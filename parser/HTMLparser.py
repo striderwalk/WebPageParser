@@ -12,7 +12,10 @@ class HTMLparser:
     def parse_file(self):
         # This will eventually parse the HTML removing all HTML tags
         ...
-        
+
+    def getlines(self):
+
+        yield from self.file.split("\n")
 
     def __repr__(self):
         return f"HTMLparser('{self.file_path}')"
