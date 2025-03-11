@@ -1,7 +1,7 @@
 |
 [next->](0003-decision-3.md)
 
-# 1. Record architecture decisions
+# 3. Remove most punctuation but keep case
 
 Date: 2025-Mar-10
 
