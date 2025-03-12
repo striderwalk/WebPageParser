@@ -11,12 +11,14 @@ class MenuOption:
 
 class Menu:
 
-    def __init__(self, options, highlight_last_choice=False):
+    def __init__(
+        self, options, highlight_last_choice=False, raise_if_invalid_choice=False
+    ):
 
         self._options = options
         self._last_choice = 0
 
-        self.raise_if_invalid_choice = False
+        self.raise_if_invalid_choice = raise_if_invalid_choice
         self.highlight_last_choice = highlight_last_choice
 
     def display(self):
