@@ -1,43 +1,50 @@
+from collections import Counter
 import re
+import string
 
 
-class HTMLparser:
-    def __init__(self, file_path):
+class HtmlParser:
+    def __init__(self, text):
+        self.text = text
 
-        self.file_path = file_path
-        self.read_file()
         self.parse_file()
-
-    def read_file(self):
-        with open(self.file_path, "r") as file:
-            self.file = file.read()
 
     def parse_file(self):
         # Select only the body
-        self.body = self.file[self.file.find("<body>") + 6 : self.file.find("</body>")]
+        self.body = self.text[self.text.find("<body>") + 6 : self.text.find("</body>")]
         # Remove padding
         self.body = self.body.strip()
 
+        # Remove all HTML tags using regular expressions
         self.body = re.sub(r"<.*?>", "", self.body, flags=re.DOTALL)
 
-        while re.search(r"\n\s*\n", self.body, flags=re.DOTALL):
+        # Remove extra newlines
+        self.body = re.sub(r"\n\s*\n", "\n", self.body, flags=re.DOTALL)
 
-            self.body = re.sub(r"\n\s*\n", "\n", self.body, flags=re.DOTALL)
+        # Remove punctuation
+        transtable = str.maketrans("", "", string.punctuation)
+        transtable[ord("'")] = ord("'")
 
-        self.lines = [line for line in self.body.split("\n") if line]
+        self.body = self.body.translate(transtable)
 
-        # Preseve relative indentation
-        # while all(str.isspace(line) or line[0] == " " for line in self.lines):
+    def get_words(self):
+        # Returns a generator for each word
+        yield from [word for word in self.body.replace("\n", "").split(" ") if word]
 
-        #     self.lines = [line[1:] for line in self.lines if line]
-        #     self.lines = [line for line in self.lines if line]
+    def get_frequencys(self):
+        word_freq = {}
+        for word in self.get_words():
+            if word.lower() not in word_freq:
+                word_freq[word.lower()] = [word]
+            else:
+                word_freq[word.lower()] = word_freq[word.lower()] + [word]
 
-        # Remove leading/trailing whitespace
-        self.lines = [line.strip() for line in self.lines]
+        word_freq_common_case = []
+        for word_list in sorted(word_freq.values(), key=lambda x: x[0].lower()):
+            data = Counter(word_list)
+            word_freq_common_case.append((data.most_common(1)[0][0], len(word_list)))
 
-    def getlines(self):
-
-        yield from self.lines
+        return word_freq_common_case
 
     def __repr__(self):
         return f"HTMLparser('{self.file_path}')"

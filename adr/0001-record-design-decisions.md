@@ -1,5 +1,5 @@
 |
-[next->](0002-decision-2.md)
+[next->](0002-keep-new-lines.md)
 
 # 1. Record architecture decisions
 
