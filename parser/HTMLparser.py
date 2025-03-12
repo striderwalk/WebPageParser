@@ -3,9 +3,8 @@ import re
 import string
 
 
-class HTMLparser:
+class HtmlParser:
     def __init__(self, text):
-
         self.text = text
 
         self.parse_file()
@@ -28,21 +27,6 @@ class HTMLparser:
 
         self.body = self.body.translate(transtable)
 
-        self.lines = [line for line in self.body.split("\n") if line]
-
-        # Preseve relative indentation
-        # while all(str.isspace(line) or line[0] == " " for line in self.lines):
-
-        #     self.lines = [line[1:] for line in self.lines if line]
-        #     self.lines = [line for line in self.lines if line]
-
-        # Remove leading/trailing whitespace
-        self.lines = [line.strip() for line in self.lines]
-
-    def get_lines(self):
-        # Returns a generator for each line
-        yield from self.lines
-
     def get_words(self):
         # Returns a generator for each word
         yield from [word for word in self.body.replace("\n", "").split(" ") if word]
@@ -57,7 +41,6 @@ class HTMLparser:
 
         word_freq_common_case = []
         for word_list in sorted(word_freq.values(), key=lambda x: x[0].lower()):
-
             data = Counter(word_list)
             word_freq_common_case.append((data.most_common(1)[0][0], len(word_list)))
 

@@ -13,7 +13,6 @@ class UI:
         os.system("clear")
 
     def get_filepath(self):
-
         filepath = None
         while not filepath or not os.path.isfile(filepath):
             filepath = input("Enter the filepath: ")
@@ -32,8 +31,7 @@ class UI:
         ]
         print("\nSelect an option:")
         for i, option in enumerate(options):
-
-            print(f"\t{i+1}. {option}")
+            print(f"\t{i + 1}. {option}")
 
         choice = 0
         while choice < 1 or choice > len(options):
@@ -46,7 +44,6 @@ class UI:
 
             choice = int(choice)
             if choice < 1 or choice > len(options):
-
                 print("Invalid choice, Please try again.")
         return int(choice)
 
@@ -62,9 +59,9 @@ class UI:
         print("\nOrder options:")
         for i, option in enumerate(options):
             if current == i + 1:
-                print(f"\t\u001b[33;1m{i+1}. {option}\u001b[0m")
+                print(f"\t\u001b[33;1m{i + 1}. {option}\u001b[0m")
             else:
-                print(f"\t{i+1}. {option}")
+                print(f"\t{i + 1}. {option}")
 
         choice = 0
         while choice < 1 or choice > len(options):
@@ -77,12 +74,10 @@ class UI:
 
             choice = int(choice)
             if choice < 1 or choice > len(options):
-
                 print("Invalid choice, Please try again.")
         return int(choice)
 
     def display_word_length(self, lengths):
-
         plt.hist(lengths, color="lightgreen", ec="black", bins=15)
         plt.show()
 

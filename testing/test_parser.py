@@ -1,4 +1,3 @@
-import pytest
 import parser
 
 
@@ -16,7 +15,6 @@ def test_body_with_text():
 
 
 def test_empty_text():
-
     assert parser.HTMLparser("").body == ""
 
 

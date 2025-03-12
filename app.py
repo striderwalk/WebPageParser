@@ -10,7 +10,6 @@ import ui
 
 class App:
     def __init__(self):
-
         self.app_ui = ui.UI()
 
         self.app_ui.clear()
@@ -19,10 +18,9 @@ class App:
             filepath = self.app_ui.get_filepath()
 
         with open(filepath, "r") as file:
-
             text = file.read()
 
-        self.parser = parser.HTMLparser(text)
+        self.parser = parser.HtmlParser(text)
 
         self.run()
 
@@ -66,7 +64,6 @@ class App:
 
         reorder_choice = 1
         while True:
-
             self.app_ui.clear()
 
             if reorder_choice == 1:
@@ -91,10 +88,9 @@ class App:
 
             if reorder_choice == 5:
                 # Save to output file
-                filename = f"output-{datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")}.txt"
+                filename = f"./output/output-{datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S')}.txt"
                 with open(filename, "w") as file:
                     for word, frequency in frequencys:
-
                         file.write(f"{word}\t{frequency}\n")
 
                 self.app_ui.clear()
@@ -116,7 +112,6 @@ class App:
         self.app_ui.display_word_length(lengths)
 
     def display_word_length_grouped(self):
-
         # Display groupped bar chart of word length
         words = self.parser.get_words()
         lengths = np.array([len(word) for word in words])
