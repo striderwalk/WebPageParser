@@ -1,7 +1,7 @@
 |
 [next->](0003-puncutation-and-case.md)
 
-# 1. Record architecture decisions
+# 2. Keep new line characters while parsing
 
 Date: 2025-Mar-10
 
