@@ -1,27 +1,38 @@
 import argparse
 import datetime
 import os
+from enum import Enum
 
 import numpy as np
 
+
 import parser
-import ui
+import cli
+
+
+class MainMenuValues(Enum):
+    SORT = 0
+    SAVE = 1
+    EXIT = 2
+    FREQUENCY = 3
+    LENGTHS = 4
+    GROUPPED_LENGTHS = 5
 
 
 class App:
     def __init__(self):
-        self.app_ui = ui.UI()
+        self.app_cli = cli.Cli()
 
-        self.app_ui.clear()
+        self.app_cli.clear()
         # If the file isn't specified in the command line promt user
         if not (filepath := self.check_args()):
-            filepath = self.app_ui.get_filepath()
+            filepath = self.app_cli.get_filepath()
 
-        with open(filepath, "r") as file:
+        with open(filepath, "r", encoding="utf-8") as file:
             text = file.read()
 
         self.parser = parser.HtmlParser(text)
-
+        self.frequencys = self.parser.get_frequencys()
         self.run()
 
     def check_args(self):
@@ -38,78 +49,99 @@ class App:
 
     def run(self):
         while True:
-            self.app_ui.clear()
+            self.app_cli.clear()
 
-            choice = self.app_ui.user_options()
+            user_options = [
+                cli.MenuOption("By Frequency", MainMenuValues.FREQUENCY),
+                cli.MenuOption("Word length graph", MainMenuValues.LENGTHS),
+                cli.MenuOption(
+                    "Groupped word length graph", MainMenuValues.GROUPPED_LENGTHS
+                ),
+                cli.MenuOption("Exit", MainMenuValues.EXIT),
+            ]
+            menu = cli.Menu(user_options)
+            menu.display()
+            choice = menu.get_choice()
 
-            if choice == 1:
-                # Display words by frequency
-                self.display_frequencys()
+            if choice == MainMenuValues.FREQUENCY:
+                self.display_frequency_menu()
 
-            if choice == 2:
-                # Display plot word length distribution
+            if choice == MainMenuValues.LENGTHS:
+
                 self.display_word_length()
 
-            if choice == 3:
-                # Display plot words  length distribution grouped
+            if choice == MainMenuValues.GROUPPED_LENGTHS:
 
                 self.display_word_length_grouped()
-            if choice == 4:
-                exit()
-
-    def display_frequencys(self):
-        self.app_ui.clear()
-
-        frequencys = self.parser.get_frequencys()
-
-        reorder_choice = 1
-        while True:
-            self.app_ui.clear()
-
-            if reorder_choice == 1:
-                # Frequency order
-                frequencys = sorted(frequencys, key=lambda x: x[1], reverse=True)
-
-            if reorder_choice == 2:
-                # Reverse frequency order
-                frequencys = sorted(frequencys, key=lambda x: x[1])
-
-            if reorder_choice == 3:
-                # Alphabetical order
-                frequencys = sorted(frequencys, key=lambda x: x[0])
-
-            if reorder_choice == 4:
-                # Reverse alphabetical order
-                frequencys = sorted(frequencys, key=lambda x: x[0], reverse=True)
-
-            for word, frequency in frequencys:
-                # Display text
-                self.app_ui.display_text(f"{word: <20}\t{frequency: > 5}")
-
-            if reorder_choice == 5:
-                # Save to output file
-                filename = f"./output/output-{datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S')}.txt"
-                with open(filename, "w") as file:
-                    for word, frequency in frequencys:
-                        file.write(f"{word}\t{frequency}\n")
-
-                self.app_ui.clear()
-                self.app_ui.display_text(f"Saved to {filename}")
-                reorder_choice = last_choice
-
-            if reorder_choice == 6:
-                # Exit Menu
+            if choice == MainMenuValues.EXIT:
                 return
 
-            last_choice = reorder_choice
-            reorder_choice = self.app_ui.reorder_options(reorder_choice)
+    def display_frequency_menu(self):
+        self.app_cli.clear()
+
+        self.display_frequencys()
+
+        while True:
+
+            options = [
+                cli.MenuOption("Resort", MainMenuValues.SORT),
+                cli.MenuOption("Save", MainMenuValues.SAVE),
+                cli.MenuOption("Exit", MainMenuValues.EXIT),
+            ]
+
+            menu = cli.Menu(options)
+            menu.display()
+
+            match menu.get_choice():
+                case MainMenuValues.SORT:
+                    sort_options = [
+                        cli.MenuOption("Frequency order", (lambda x: x[1], True)),
+                        cli.MenuOption(
+                            "Reverse Frequency order", (lambda x: x[1], False)
+                        ),
+                        cli.MenuOption("Alphabetical order", (lambda x: x[0], False)),
+                        cli.MenuOption(
+                            "Reverse alphabetical order", (lambda x: x[0], True)
+                        ),
+                    ]
+
+                    sort_menu = cli.Menu(sort_options, highlight_last_choice=True)
+
+                    sort_menu.display()
+
+                    sort_option = sort_menu.get_choice()
+
+                    self.frequencys = sorted(
+                        self.frequencys, key=sort_option[0], reverse=sort_option[1]
+                    )
+
+                    self.display_frequencys()
+
+                case MainMenuValues.SAVE:
+
+                    # Save to output file
+                    filename = f"./output/output-{datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S')}.txt"
+                    with open(filename, "w") as file:
+                        for word, frequency in self.frequencys:
+                            file.write(f"{word}\t{frequency}\n")
+
+                    self.app_cli.clear()
+                    self.app_cli.display_text(f"Saved to {filename}")
+
+                case MainMenuValues.EXIT:
+                    return
+
+    def display_frequencys(self):
+        for word, frequency in self.frequencys:
+            # Display text
+            self.app_cli.display_text(f"{word: <20}\t{frequency: > 5}")
 
     def display_word_length(self):
         # Display bar chart of word length
         words = self.parser.get_words()
         lengths = [len(word) for word in words]
 
-        self.app_ui.display_word_length(lengths)
+        self.app_cli.display_word_length(lengths)
 
     def display_word_length_grouped(self):
         # Display groupped bar chart of word length
@@ -123,7 +155,7 @@ class App:
             len(lengths[lengths > 10]),
         ]
 
-        self.app_ui.display_word_length_groupped(groups, bins)
+        self.app_cli.display_word_length_groupped(groups, bins)
 
 
 if __name__ == "__main__":
