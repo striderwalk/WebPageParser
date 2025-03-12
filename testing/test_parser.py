@@ -30,7 +30,8 @@ def test_multiline_tag():
                 p>test<
                 /
                 p>
-            </body>"""
+            </body
+            >"""
         ).body
         == "test"
     )
