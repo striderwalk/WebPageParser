@@ -121,7 +121,7 @@ class App:
 
                     # Save to output file
                     filename = f"./output/output-{datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S')}.txt"
-                    with open(filename, "w") as file:
+                    with open(filename, "w", encoding="utf-8") as file:
                         for word, frequency in self.frequencys:
                             file.write(f"{word}\t{frequency}\n")
 

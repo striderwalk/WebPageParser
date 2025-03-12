@@ -1,5 +1,5 @@
 |
-[next->](0003-decision-3.md)
+[next->](0004-seperate-menus.md)
 
 # 3. Remove most punctuation but keep case
 

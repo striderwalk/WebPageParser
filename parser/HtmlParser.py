@@ -11,21 +11,34 @@ class HtmlParser:
 
     def parse_file(self):
         # Select only the body
-        self.body = self.text[self.text.find("<body>") + 6 : self.text.find("</body>")]
-        # Remove padding
-        self.body = self.body.strip()
-
+        # self.body = self.text[self.text.find("<body>") + 6 : self.text.find("</body>")]
+        self.body = "".join(
+            re.findall("<.*body.*>.*<.*/.*body.*>", self.text, flags=re.DOTALL)
+        )
         # Remove all HTML tags using regular expressions
-        self.body = re.sub(r"<.*?>", "", self.body, flags=re.DOTALL)
+        patterns = [
+            r"<script[^<>]*?>[^<>]*?<[^<>]*?\/[^<>]*?script[^<>]*?>",
+            r"<svg[^<>]*?>[^<>]*?<[^<>]*?\/[^<>]*?svg[^<>]*?>",
+            r"<img[^<>]*?\/>",
+            r"<style[^<>]*?>[^<>]*?<[^<>]*?\/[^<>]*?style[^<>]*?>",
+            r"<.*?>",
+        ]
+        for pattern in patterns:
+            self.body = re.sub(pattern, " ", self.body, flags=re.DOTALL)
 
         # Remove extra newlines
         self.body = re.sub(r"\n\s*\n", "\n", self.body, flags=re.DOTALL)
 
         # Remove punctuation
         transtable = str.maketrans("", "", string.punctuation)
+        transtable[ord("-")] = ord("-")
         transtable[ord("'")] = ord("'")
 
         self.body = self.body.translate(transtable)
+
+        with open("output/body.txt", "w", encoding="utf-8") as file:
+
+            file.write(self.body)
 
     def get_words(self):
         # Returns a generator for each word
