@@ -71,8 +71,8 @@ class App:
                 self.display_word_length()
 
             if choice == MainMenuValues.GROUPPED_LENGTHS:
+                self.display_word_length(grouped=True)
 
-                self.display_word_length_grouped()
             if choice == MainMenuValues.EXIT:
                 return
 
@@ -136,26 +136,12 @@ class App:
             # Display text
             self.app_cli.display_text(f"{word: <20}\t{frequency: > 5}")
 
-    def display_word_length(self):
+    def display_word_length(self, grouped=False):
         # Display bar chart of word length
-        words = self.parser.get_words()
-        lengths = [len(word) for word in words]
 
-        self.app_cli.display_word_length(lengths)
-
-    def display_word_length_grouped(self):
-        # Display groupped bar chart of word length
-        words = self.parser.get_words()
-        lengths = np.array([len(word) for word in words])
-        groups = ["1-3", "4-6", "7-10", "10+"]
-        bins = [
-            len(lengths[lengths <= 3]),
-            len(lengths[lengths <= 6][lengths[lengths <= 6] >= 4]),
-            len(lengths[lengths <= 10][lengths[lengths <= 10] >= 7]),
-            len(lengths[lengths > 10]),
-        ]
-
-        self.app_cli.display_word_length_groupped(groups, bins)
+        res = self.parser.get_length_counts(grouped)
+        print(res)
+        self.app_cli.display_bar_chart(res["labels"], res["data"])
 
 
 if __name__ == "__main__":

@@ -23,11 +23,6 @@ class Cli:
 
         return filepath
 
-    def display_word_length(self, lengths):
-
-        plt.hist(lengths, color="lightgreen", ec="black", bins=15)
-        plt.show()
-
-    def display_word_length_groupped(self, groups, bins):
-        plt.bar(groups, bins)
+    def display_bar_chart(self, labels, bins):
+        plt.bar(labels, bins)
         plt.show()
