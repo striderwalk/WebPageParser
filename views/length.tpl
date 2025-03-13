@@ -15,10 +15,14 @@
     <script type="text/javascript" src="/static/jquery.min.js"></script>
     <script type="text/javascript" src="/static/bootstrap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.2.2/Chart.min.js"></script>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css"
+      rel="stylesheet"
+    />
   </head>
   <body>
     <nav class="navbar navbar-default navbar-static-top">
-      <ul class="nav nav-tabs">
+      <ul class="nav nav-tabs nav-fill" style="width: 100%">
         <li class="nav-item">
           <a class="nav-link" aria-current="page" href="upload" id="uploadLink"
             >Upload</a
@@ -40,19 +44,31 @@
       </ul>
     </nav>
 
-    <div class="container">
-      <div class="row p-2">
-        <div class="container mt-5">
-          <div class="form-check form-switch">
-            <input class="form-check-input" type="checkbox" id="toggleSwitch" />
-            <label class="form-check-label" for="toggleSwitch"
-              >Group lengths</label
-            >
+    <div class="container mt-5">
+      <div class="card shadow p-4">
+        <div class="row">
+          <div class="col">
+            <a id="downloadLink" class="btn btn-primary" href="#">
+              <i class="bi bi-download"></i> Download
+            </a>
+          </div>
+          <div class="col">
+            <div class="form-check form-switch">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                id="toggleSwitch"
+              />
+              <label class="form-check-label" for="toggleSwitch"
+                >Group lengths</label
+              >
+            </div>
           </div>
         </div>
-      </div>
-      <div class="row p-3">
-        <canvas id="myChart" style="margin: 10px"></canvas>
+
+        <div class="row">
+          <canvas id="myChart" style="margin: 10px"></canvas>
+        </div>
       </div>
     </div>
   </body>
@@ -125,6 +141,23 @@
       window.location.href = currentUrl.toString();
     });
   </script>
+
+  <script>
+    // JavaScript to dynamically append query parameters to the download link
+    window.onload = function () {
+      // Get the current URL's query parameters
+      const currentUrl = new URL(window.location.href);
+      const queryParams = currentUrl.search; // This gets the query string (e.g., ?param1=value1&param2=value2)
+
+      // Construct the download link with the query parameters
+      const downloadLink = document.getElementById("downloadLink");
+      const baseDownloadUrl = "http://localhost:8000/download"; // Adjust to your server's download URL
+
+      // Append the query parameters to the download URL
+      downloadLink.href = baseDownloadUrl + queryParams + "&page=lengths";
+    };
+  </script>
+
   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>

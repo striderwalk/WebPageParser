@@ -25,29 +25,50 @@
     </style>
   </head>
   <body class="bg-light">
-    % include('header.tpl', title='Page Title')
+    <nav class="navbar navbar-default navbar-static-top">
+      <ul class="nav nav-tabs nav-fill" style="width: 100%">
+        <li class="nav-item">
+          <a
+            class="nav-link active"
+            aria-current="page"
+            href="upload"
+            id="uploadLink"
+            >Upload</a
+          >
+        </li>
+        <li class="nav-item">
+          <a
+            class="nav-link"
+            href="frequency?order=frequency"
+            id="frequencyLink"
+            >Word Frequency</a
+          >
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="length" id="lengthLink">Word Lengths</a>
+        </li>
+      </ul>
+    </nav>
 
     <!-- The drop-zone and upload UI -->
-    <div class="container mt-5">
-      <div class="card shadow p-4">
-        <h2 class="mb-3 text-center">Drag & Drop File Upload</h2>
 
-        <!-- Drag & Drop Zone -->
-        <div id="dropZone" class="drop-zone">
-          Drag & Drop a file here or
-          <span class="text-primary">click to select</span>
-          <input type="file" id="fileInput" class="d-none" />
-        </div>
+    <div class="card shadow p-4" style="width: 60%; height: 30%; margin: auto">
+      <h2 class="mb-3 text-center">Drag & Drop File Upload</h2>
 
-        <!-- Upload Button -->
-        <button class="btn btn-primary w-100 mt-3" id="uploadBtn" disabled>
-          Upload
-        </button>
+      <!-- Drag & Drop Zone -->
+      <div id="dropZone" class="drop-zone">
+        Drag & Drop a file here or
+        <span class="text-primary">click to select</span>
+        <input type="file" id="fileInput" class="d-none" />
+      </div>
 
-        <!-- Hash Display -->
-        <div id="hashDisplay" class="alert alert-success mt-3 d-none">
-          <strong>File Hash:</strong> <span id="fileHash"></span>
-        </div>
+      <!-- Upload Button -->
+      <button class="btn btn-primary w-100 mt-3" id="uploadBtn" disabled>
+        Upload
+      </button>
+
+      <div id="hashDisplay" class="alert alert-success mt-3 d-none">
+        <strong>File Uploaded:</strong> <span id="fileName"></span>
       </div>
     </div>
 
@@ -111,7 +132,7 @@
             const data = await response.json();
             if (data.hash) {
               // Update the hash display
-              document.getElementById("fileHash").textContent = data.hash;
+              document.getElementById("fileName").textContent = data.filename;
               document.getElementById("hashDisplay").classList.remove("d-none");
 
               // Call function to update nav links

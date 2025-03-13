@@ -15,10 +15,14 @@
 
     <script type="text/javascript" src="/static/jquery.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css"
+      rel="stylesheet"
+    />
   </head>
   <body>
     <nav class="navbar navbar-default navbar-static-top">
-      <ul class="nav nav-tabs">
+      <ul class="nav nav-tabs nav-fill" style="width: 100%">
         <li class="nav-item">
           <a class="nav-link" aria-current="page" href="upload" id="uploadLink"
             >Upload</a
@@ -38,69 +42,82 @@
       </ul>
     </nav>
 
-    <div class="container">
-      <!-- Dropdown styled with Bootstrap -->
-      <div class="container mt-5">
-        <div class="dropdown">
-          <button
-            class="btn btn-primary dropdown-toggle"
-            type="button"
-            id="dropdownMenuButton"
-            data-bs-toggle="dropdown"
-            aria-expanded="false"
-          >
-            Sorting Options
-          </button>
-          <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-            <li>
-              <a class="dropdown-item" href="#" data-value="frequency"
-                >Frequency</a
+    <div class="container mt-5">
+      <div class="card shadow p-4">
+        <!-- Dropdown styled with Bootstrap -->
+
+        <div class="row">
+          <div class="col">
+            <a id="downloadLink" class="btn btn-primary" href="#">
+              <i class="bi bi-download"></i> Download
+            </a>
+          </div>
+          <div class="col">
+            <div class="dropdown">
+              <button
+                class="btn btn-primary dropdown-toggle"
+                type="button"
+                id="dropdownMenuButton"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
               >
-            </li>
-            <li>
-              <a class="dropdown-item" href="#" data-value="reverse-frequency"
-                >Reverse Frequency</a
-              >
-            </li>
-            <li>
-              <a class="dropdown-item" href="#" data-value="alphabetical"
-                >Alphabetical</a
-              >
-            </li>
-            <li>
-              <a
-                class="dropdown-item"
-                href="#"
-                data-value="reverse-alphabetical"
-                >Reverse Alphabetical</a
-              >
-            </li>
-          </ul>
+                Sorting Options
+              </button>
+              <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                <li>
+                  <a class="dropdown-item" href="#" data-value="frequency"
+                    >Frequency</a
+                  >
+                </li>
+                <li>
+                  <a
+                    class="dropdown-item"
+                    href="#"
+                    data-value="reverse-frequency"
+                    >Reverse Frequency</a
+                  >
+                </li>
+                <li>
+                  <a class="dropdown-item" href="#" data-value="alphabetical"
+                    >Alphabetical</a
+                  >
+                </li>
+                <li>
+                  <a
+                    class="dropdown-item"
+                    href="#"
+                    data-value="reverse-alphabetical"
+                    >Reverse Alphabetical</a
+                  >
+                </li>
+              </ul>
+            </div>
+          </div>
         </div>
-      </div>
 
-      <table class="table">
-        <thead>
-          <tr>
-            <th>Word</th>
-            <th>Frequency</th>
-            <th>Length</th>
-          </tr>
-        </thead>
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Word</th>
+              <th>Frequency</th>
+              <th>Length</th>
+            </tr>
+          </thead>
 
-        <tbody>
-          % for item,frequency in zip(data["words"],data["frequency"]):
-          <tr>
-            <td>{{ item }}</td>
-            <td>{{ frequency }}</td>
-            <td>{{ len(item) }}</td>
-          </tr>
-          % end
-        </tbody>
-      </table>
+          <tbody>
+            % for item,frequency in zip(data["words"],data["frequency"]):
+            <tr>
+              <td>{{ item }}</td>
+              <td>{{ frequency }}</td>
+              <td>{{ len(item) }}</td>
+            </tr>
+            % end
+          </tbody>
+        </table>
 
-      <div class="row">
-        <hr />
+        <div class="row">
+          <hr />
+        </div>
       </div>
     </div>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
@@ -135,7 +152,22 @@
         });
       });
     </script>
-    <!-- Your Custom JS File -->
+    <script>
+      // JavaScript to dynamically append query parameters to the download link
+      window.onload = function () {
+        // Get the current URL's query parameters
+        const currentUrl = new URL(window.location.href);
+        const queryParams = currentUrl.search; // This gets the query string (e.g., ?param1=value1&param2=value2)
+
+        // Construct the download link with the query parameters
+        const downloadLink = document.getElementById("downloadLink");
+        const baseDownloadUrl = "http://localhost:8000/download"; // Adjust to your server's download URL
+
+        // Append the query parameters to the download URL
+        downloadLink.href = baseDownloadUrl + queryParams + "&page=frequency";
+      };
+    </script>
+
     <script src="static/links.js"></script>
   </body>
 </html>

@@ -1,10 +1,19 @@
+import csv
 import json
 import os
-from file_utilities import frequency_from_hash, length_from_hash, save_upload
+
+from matplotlib import pyplot as plt
 import parser
 import sys
 
 from bottle import Bottle, request, response, run, static_file, template
+
+from file_utilities import (
+    frequency_from_hash,
+    length_from_hash,
+    root_file_name_from_hash,
+    save_upload,
+)
 
 dirname = os.path.dirname(sys.argv[0])
 
@@ -56,15 +65,8 @@ def frequency():
     return template("frequency", data=data, root=dirname + "/veiws")
 
 
-grouped = False
-
-
 @app.route("/length")
 def length():
-    grouped_selection = request.query.get("grouped")
-
-    global grouped
-    grouped = True if grouped_selection == "true" else False
 
     data = {"test": "Hello this is a length"}
     return template("length", data=data)
@@ -74,7 +76,8 @@ def length():
 def chart_data():
 
     file_hash = request.query.get("hash")
-    grouped = request.query.get("grouped")
+    grouped_selection = request.query.get("grouped")
+    grouped = True if grouped_selection == "true" else False
 
     if file_hash:
         word_data = length_from_hash(file_hash, grouped)
@@ -113,6 +116,65 @@ def upload_file():
 @app.get("/upload")
 def serve_upload_page():
     return template("upload")
+
+
+@app.route("/download")
+def download_file():
+
+    page = request.query.get("page")
+    file_hash = request.query.get("hash")
+    print(f"{page=} {file_hash=}")
+    if not file_hash:
+        return
+    if page == "frequency":
+
+        sort_order = request.query.get("file_hash")
+
+        sort_order_map = {
+            "frequency": parser.SortOptions.FREQUENCY,
+            "reverse-frequency": parser.SortOptions.REVERSE_FREQUENCY,
+            "alphabetical": parser.SortOptions.ALPHABETICAL,
+            "reverse-alphabetical": parser.SortOptions.REVERSE_ALPHABETICAL,
+        }
+
+        sort_option = (
+            sort_order_map[sort_order] if sort_order else parser.SortOptions.FREQUENCY
+        )
+        root_file_name = root_file_name_from_hash(file_hash)
+        print(f"{root_file_name=}")
+        frequency = frequency_from_hash(file_hash, sort_option)
+
+        file_path = f"{root_file_name}_frequency.csv"
+        with open(f"output/{file_path}", "w", encoding="utf-8") as file:
+            file_writer = csv.writer(file, delimiter=",")
+            for line in frequency:
+                file_writer.writerow(line)
+
+        response.headers["Content-Disposition"] = response.headers[
+            "Content-Disposition"
+        ] = "attachment"
+
+        return static_file(file_path, root="./output", download=True)
+    elif page == "lengths":
+        grouped_selection = request.query.get("grouped")
+        grouped = True if grouped_selection == "true" else False
+
+        if file_hash:
+            word_data = length_from_hash(file_hash, grouped)
+        else:
+            word_data = {"labels": [], "data": []}
+
+        root_file_name = root_file_name_from_hash(file_hash)
+        file_path = f"{root_file_name}_lengths.png"
+
+        plt.bar(word_data["labels"], word_data["data"])
+        plt.savefig(f"./output/{file_path}")
+
+        response.headers["Content-Disposition"] = response.headers[
+            "Content-Disposition"
+        ] = "attachment"
+
+        return static_file(file_path, root="./output", download=True)
 
 
 if __name__ == "__main__":
