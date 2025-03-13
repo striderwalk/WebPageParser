@@ -1,14 +1,21 @@
 from collections import Counter
+from enum import Enum
 import re
 import string
 
 import numpy as np
 
 
+class SortOptions(Enum):
+    FREQUENCY = 0
+    REVERSE_FREQUENCY = 1
+    ALPHABETICAL = 2
+    REVERSE_ALPHABETICAL = 3
+
+
 class HtmlParser:
     def __init__(self, text):
         self.text = text
-
         self.parse_file()
 
     def parse_file(self):
@@ -38,10 +45,6 @@ class HtmlParser:
 
         self.body = self.body.translate(transtable)
 
-        with open("output/body.txt", "w", encoding="utf-8") as file:
-
-            file.write(self.body)
-
     def get_words(self, remove_numbers=True):
         # Returns a generator for each word
         words = [
@@ -52,7 +55,7 @@ class HtmlParser:
 
         return words
 
-    def get_frequencys(self):
+    def get_frequencys(self, sort_option=SortOptions.FREQUENCY):
         word_freq = {}
         for word in self.get_words():
             if word.lower() not in word_freq:
@@ -65,14 +68,25 @@ class HtmlParser:
             data = Counter(word_list)
             word_freq_common_case.append((data.most_common(1)[0][0], len(word_list)))
 
-        return word_freq_common_case
+            (("Frequency order", (lambda x: x[1], True)),)
+            ("Reverse Frequency order", (lambda x: x[1], False))
+            ("Alphabetical order", (lambda x: x[0], False))
+            ("Reverse alphabetical order", (lambda x: x[0], True))
+
+        if sort_option == SortOptions.FREQUENCY:
+            return sorted(word_freq_common_case, key=lambda x: x[1], reverse=True)
+
+        if sort_option == SortOptions.REVERSE_FREQUENCY:
+            return sorted(word_freq_common_case, key=lambda x: x[1], reverse=False)
+        if sort_option == SortOptions.ALPHABETICAL:
+            return sorted(word_freq_common_case, key=lambda x: x[0], reverse=False)
+        if sort_option == SortOptions.REVERSE_ALPHABETICAL:
+            return sorted(word_freq_common_case, key=lambda x: x[0], reverse=True)
 
     def get_length_counts(self, grouped=False):
-
         lengths = []
 
         for word in self.get_words():
-
             lengths += [len(word)]
 
         word_lengths = np.array(lengths)
@@ -81,7 +95,6 @@ class HtmlParser:
         length_counts = sorted(length_counts.items(), key=lambda x: x[0])
 
         if not grouped:
-
             return {
                 "labels": [int(i[0]) for i in length_counts],
                 "data": [int(i[1]) for i in length_counts],

@@ -1,3 +1,3 @@
-from .HtmlParser import HtmlParser
+from .HtmlParser import HtmlParser, SortOptions
 
-__all__ = ["HtmlParser"]
+__all__ = ["HtmlParser", "SortOptions"]

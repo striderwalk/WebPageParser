@@ -1,151 +1,172 @@
-import argparse
-import datetime
+import hashlib
+import json
 import os
-from enum import Enum
-
-import numpy as np
-
-
 import parser
-import cli
+import sys
+
+import bottle
+from bottle import Bottle, request, response, run, static_file, template
+
+dirname = os.path.dirname(sys.argv[0])
+
+app = Bottle()
+UPLOAD_FOLDER = "uploads"
 
 
-class MainMenuValues(Enum):
-    SORT = 0
-    SAVE = 1
-    EXIT = 2
-    FREQUENCY = 3
-    LENGTHS = 4
-    GROUPPED_LENGTHS = 5
+@app.route("/static/<filename:re:.*.ico>")
+def send_ico(filename):
+    return static_file(filename, root=dirname + "/static/asset/")
 
 
-class App:
-    def __init__(self):
-        self.app_cli = cli.Cli()
+@app.route("/static/<filename:re:.*.css>")
+def send_css(filename):
+    return static_file(filename, root=dirname + "/static/asset/css")
 
-        self.app_cli.clear()
-        # If the file isn't specified in the command line promt user
-        if not (filepath := self.check_args()):
-            filepath = self.app_cli.get_filepath()
 
-        with open(filepath, "r", encoding="utf-8") as file:
-            text = file.read()
+@app.route("/static/<filename:re:.*.js>")
+def send_js(filename):
+    return static_file(filename, root=dirname + "/static/asset/js")
 
-        self.parser = parser.HtmlParser(text)
-        self.frequencys = self.parser.get_frequencys()
-        self.run()
 
-    def check_args(self):
-        arg_parser = argparse.ArgumentParser(description="HTML parser")
-        arg_parser.add_argument("-f", "--filepath", type=str, help="The file to parse")
+def get_file_from_hash(file_hash):
+    file_path = os.path.join(UPLOAD_FOLDER, file_hash)
+    if os.path.exists(file_path):
+        with open(file_path, "r", encoding="utf-8") as file:
+            try:
+                data = file.read()
+            except UnicodeDecodeError as e:
+                return "File could not be decoded!", 404
 
-        args = arg_parser.parse_args()
-        if args.filepath is None:
-            return False
-        if not os.path.isfile(args.filepath):
-            print(f"The file '{args.filepath}' could not be found.")
-            exit()
-        return args.filepath
+        return data
+    return "File not found!", 404
 
-    def run(self):
-        while True:
-            self.app_cli.clear()
 
-            user_options = [
-                cli.MenuOption("By Frequency", MainMenuValues.FREQUENCY),
-                cli.MenuOption("Word length graph", MainMenuValues.LENGTHS),
-                cli.MenuOption(
-                    "Groupped word length graph", MainMenuValues.GROUPPED_LENGTHS
-                ),
-                cli.MenuOption("Exit", MainMenuValues.EXIT),
-            ]
-            menu = cli.Menu(user_options)
-            menu.display()
-            choice = menu.get_choice()
+def frequency_from_hash(file_hash, sort_option):
+    data = get_file_from_hash(file_hash)
 
-            if choice == MainMenuValues.FREQUENCY:
-                self.display_frequency_menu()
+    return parser.HtmlParser(data).get_frequencys(sort_option)
 
-            if choice == MainMenuValues.LENGTHS:
 
-                self.display_word_length()
+def length_from_hash(file_hash, grouped):
+    data = get_file_from_hash(file_hash)
 
-            if choice == MainMenuValues.GROUPPED_LENGTHS:
-                self.display_word_length(grouped=True)
+    return parser.HtmlParser(data).get_length_counts(grouped)
 
-            if choice == MainMenuValues.EXIT:
-                return
 
-    def display_frequency_menu(self):
-        self.app_cli.clear()
+@app.route("/frequency")
+def frequency():
 
-        self.display_frequencys()
+    sort_order = request.query.get("sort_order")
+    file_hash = request.query.get("hash")
 
-        while True:
+    sort_order_map = {
+        "frequency": parser.SortOptions.FREQUENCY,
+        "reverse-frequency": parser.SortOptions.REVERSE_FREQUENCY,
+        "alphabetical": parser.SortOptions.ALPHABETICAL,
+        "reverse-alphabetical": parser.SortOptions.REVERSE_ALPHABETICAL,
+    }
 
-            options = [
-                cli.MenuOption("Resort", MainMenuValues.SORT),
-                cli.MenuOption("Save", MainMenuValues.SAVE),
-                cli.MenuOption("Exit", MainMenuValues.EXIT),
-            ]
+    sort_option = (
+        sort_order_map[sort_order] if sort_order else parser.SortOptions.FREQUENCY
+    )
+    print(sort_option)
+    if file_hash:
+        frequency = frequency_from_hash(file_hash, sort_option)
+    else:
+        frequency = []
 
-            menu = cli.Menu(options)
-            menu.display()
+    data = {
+        "words": [i[0] for i in frequency],
+        "frequency": [i[1] for i in frequency],
+    }
 
-            match menu.get_choice():
-                case MainMenuValues.SORT:
-                    sort_options = [
-                        cli.MenuOption("Frequency order", (lambda x: x[1], True)),
-                        cli.MenuOption(
-                            "Reverse Frequency order", (lambda x: x[1], False)
-                        ),
-                        cli.MenuOption("Alphabetical order", (lambda x: x[0], False)),
-                        cli.MenuOption(
-                            "Reverse alphabetical order", (lambda x: x[0], True)
-                        ),
-                    ]
+    return template("frequency", data=data, root=dirname + "/veiws")
 
-                    sort_menu = cli.Menu(sort_options, highlight_last_choice=True)
 
-                    sort_menu.display()
+grouped = False
 
-                    sort_option = sort_menu.get_choice()
 
-                    self.frequencys = sorted(
-                        self.frequencys, key=sort_option[0], reverse=sort_option[1]
-                    )
+@app.route("/length")
+def length():
+    grouped_selection = request.query.get("grouped")
 
-                    self.display_frequencys()
+    global grouped
+    grouped = True if grouped_selection == "true" else False
 
-                case MainMenuValues.SAVE:
+    data = {"test": "Hello this is a length"}
+    return template("length", data=data)
 
-                    # Save to output file
-                    filename = f"./output/output-{datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S')}.txt"
-                    with open(filename, "w", encoding="utf-8") as file:
-                        for word, frequency in self.frequencys:
-                            file.write(f"{word}\t{frequency}\n")
 
-                    self.app_cli.clear()
-                    self.app_cli.display_text(f"Saved to {filename}")
+@app.route("/length-data")
+def chart_data():
 
-                case MainMenuValues.EXIT:
-                    return
+    file_hash = request.query.get("hash")
+    grouped = request.query.get("grouped")
 
-    def display_frequencys(self):
-        for word, frequency in self.frequencys:
-            # Display text
-            self.app_cli.display_text(f"{word: <20}\t{frequency: > 5}")
+    if file_hash:
+        word_data = length_from_hash(file_hash, grouped)
+    else:
+        word_data = {"labels": [], "data": []}
+    data = {
+        "labels": word_data["labels"],
+        "datasets": [
+            {
+                "label": "Word lengths",
+                "data": word_data["data"],
+                "backgroundColor": "rgba(54, 162, 235, 0.5)",
+                "borderColor": "rgba(54, 162, 235, 1)",
+                "borderWidth": 1,
+            }
+        ],
+    }
+    response.content_type = "application/json"
 
-    def display_word_length(self, grouped=False):
-        # Display bar chart of word length
+    return json.dumps(data)
 
-        res = self.parser.get_length_counts(grouped)
-        print(res)
-        self.app_cli.display_bar_chart(res["labels"], res["data"])
+
+def compute_file_hash(file):
+    """Compute SHA-256 hash of an uploaded file"""
+    hasher = hashlib.sha256()
+    for chunk in iter(lambda: file.read(4096), b""):  # Read in chunks
+        hasher.update(chunk)
+    file.seek(0)  # Reset file pointer
+    return hasher.hexdigest()
+
+
+@app.post("/upload")
+def upload_file():
+    """Handle file upload and return its hash"""
+    upload = request.files.get("file")
+
+    print(upload)
+    if not upload:
+        response.status = 400
+        return {"error": "No file uploaded"}
+
+    # Compute the hash of the saved file
+    file_hash = compute_file_hash(upload.file)
+
+    file_path = os.path.join(UPLOAD_FOLDER, file_hash)
+
+    # Save the uploaded file to the specified directory
+    try:
+        if not os.path.exists(file_path):
+            upload.save(file_path)
+
+        # Return the file hash as JSON response
+        return {"hash": file_hash}
+
+    except Exception as e:
+        response.status = 500
+        return {"error": f"Server error: {str(e)}"}
+
+
+@app.route("/")
+@app.get("/upload")
+def serve_upload_page():
+    return template("upload")
 
 
 if __name__ == "__main__":
-    try:
-        App()
-    except KeyboardInterrupt:
-        pass
+
+    run(app, host="localhost", port=8000, debug=True, reloader=True)
