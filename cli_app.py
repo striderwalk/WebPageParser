@@ -135,7 +135,7 @@ class App:
         # Display bar chart of word length
 
         res = self.parser.get_length_counts(grouped)
-        print(res)
+
         self.app_cli.display_bar_chart(res["labels"], res["data"])
 
 
