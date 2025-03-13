@@ -26,7 +26,10 @@
   </head>
   <body class="bg-light">
     <nav class="navbar navbar-default navbar-static-top">
-      <ul class="nav nav-tabs nav-fill" style="width: 100%">
+      <ul
+        class="nav nav-tabs flex-column flex-sm-row nav-fill"
+        style="width: 95%"
+      >
         <li class="nav-item">
           <a
             class="nav-link active"
@@ -49,7 +52,6 @@
         </li>
       </ul>
     </nav>
-
     <!-- The drop-zone and upload UI -->
 
     <div class="card shadow p-4" style="width: 60%; height: 30%; margin: auto">

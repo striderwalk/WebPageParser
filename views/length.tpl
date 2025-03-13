@@ -22,7 +22,10 @@
   </head>
   <body>
     <nav class="navbar navbar-default navbar-static-top">
-      <ul class="nav nav-tabs nav-fill" style="width: 100%">
+      <ul
+        class="nav nav-tabs flex-column flex-sm-row nav-fill"
+        style="width: 100%"
+      >
         <li class="nav-item">
           <a class="nav-link" aria-current="page" href="upload" id="uploadLink"
             >Upload</a
@@ -41,17 +44,19 @@
             >Word Lengths</a
           >
         </li>
+        <vr />
+
+        <li class="nav-item justify-content: flex-end;">
+          <a id="downloadLink" class="btn nav-link" href="#">
+            <i class="bi bi-download"></i> Download
+          </a>
+        </li>
       </ul>
     </nav>
 
     <div class="container mt-5">
       <div class="card shadow p-4">
         <div class="row">
-          <div class="col">
-            <a id="downloadLink" class="btn btn-primary" href="#">
-              <i class="bi bi-download"></i> Download
-            </a>
-          </div>
           <div class="col">
             <div class="form-check form-switch">
               <input

@@ -19,10 +19,25 @@
       href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css"
       rel="stylesheet"
     />
+    <link
+      rel="stylesheet"
+      href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css"
+    />
   </head>
   <body>
     <nav class="navbar navbar-default navbar-static-top">
-      <ul class="nav nav-tabs nav-fill" style="width: 100%">
+      <ul
+        class="nav nav-tabs flex-column flex-sm-row nav-fill"
+        style="width: 100%"
+      >
         <li class="nav-item">
           <a class="nav-link" aria-current="page" href="upload" id="uploadLink"
             >Upload</a
@@ -39,14 +54,19 @@
         <li class="nav-item">
           <a class="nav-link" href="length" id="lengthLink">Word Lengths</a>
         </li>
+        <vr />
+
+        <li class="nav-item justify-content: flex-end;">
+          <a id="downloadLink" class="btn nav-link" href="#">
+            <i class="bi bi-download"></i> Download
+          </a>
+        </li>
       </ul>
     </nav>
 
     <div class="container mt-5">
       <div class="card shadow p-4">
-        <!-- Dropdown styled with Bootstrap -->
-
-        <div class="row">
+        <!-- <div class="row">
           <div class="col">
             <a id="downloadLink" class="btn btn-primary" href="#">
               <i class="bi bi-download"></i> Download
@@ -93,28 +113,29 @@
               </ul>
             </div>
           </div>
+        </div> -->
+
+        <div class="row">
+          <table id="myTable" class="table table-striped">
+            <thead>
+              <tr>
+                <th>Word</th>
+                <th>Frequency</th>
+                <th>Length</th>
+              </tr>
+            </thead>
+            <tbody>
+              % for item,frequency in zip(data["words"],data["frequency"]):
+
+              <tr>
+                <td>{{ item }}</td>
+                <td>{{ frequency }}</td>
+                <td>{{ len(item) }}</td>
+              </tr>
+              % end
+            </tbody>
+          </table>
         </div>
-
-        <table class="table table-striped">
-          <thead>
-            <tr>
-              <th>Word</th>
-              <th>Frequency</th>
-              <th>Length</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            % for item,frequency in zip(data["words"],data["frequency"]):
-            <tr>
-              <td>{{ item }}</td>
-              <td>{{ frequency }}</td>
-              <td>{{ len(item) }}</td>
-            </tr>
-            % end
-          </tbody>
-        </table>
-
         <div class="row">
           <hr />
         </div>
@@ -149,6 +170,21 @@
 
           // Redirect to the new URL
           window.location.href = currentUrl.toString();
+        });
+      });
+    </script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
+
+    <script>
+      $(document).ready(function () {
+        $("#myTable").DataTable({
+          paging: true,
+          lengthMenu: [20, 30, 40, 50],
+          searching: true,
+
+          ordering: true,
         });
       });
     </script>
