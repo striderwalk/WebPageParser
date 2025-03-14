@@ -9,7 +9,6 @@ UPLOAD_FOLDER = "uploads"
 
 
 def get_files_from_hashes(file_hashes):
-    print(f"{len(file_hashes)=} ")
 
     files = glob.glob("uploads/*")
     datas = []
@@ -26,7 +25,7 @@ def get_files_from_hashes(file_hashes):
                     datas.append(data)
                 except UnicodeDecodeError as _:
                     pass
-    # print(datas)l
+
     return datas
 
 
@@ -44,7 +43,7 @@ def frequency_from_hashes(file_hashes, sort_option):
     datas = get_files_from_hashes(file_hashes)
     frequencys = []
     for data in datas:
-        print("data")
+
         frequencys.extend(parser.HtmlParser(data).get_frequencys(sort_option))
     return frequencys
 
@@ -61,7 +60,7 @@ def compute_file_hash(file):
 
 def length_from_hashes(file_hashes, grouped):
     datas = get_files_from_hashes(file_hashes)
-    print(len(datas))
+
     length_dict = dict()
 
     for data in datas:

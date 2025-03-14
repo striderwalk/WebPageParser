@@ -40,7 +40,7 @@ def frequency():
 
     sort_order = request.query.get("sort_order")
     file_hashes = request.query.get("hashes").split(",")
-    print(file_hashes)
+
     sort_order_map = {
         "frequency": parser.SortOptions.FREQUENCY,
         "reverse-frequency": parser.SortOptions.REVERSE_FREQUENCY,
@@ -54,7 +54,7 @@ def frequency():
 
     if file_hashes:
         frequency = frequency_from_hashes(file_hashes, sort_option)
-        print(f"{frequency=}")
+
     else:
         frequency = []
 
@@ -85,7 +85,6 @@ def chart_data():
     else:
         word_data = {"labels": [], "data": []}
 
-    print(word_data)
     data = {
         "labels": word_data["labels"],
         "datasets": [
@@ -105,7 +104,7 @@ def chart_data():
 
 @app.post("/upload")
 def upload_file():
-    print("Recived files")
+
     uploaded_files = request.files.getall("files")  # Get multiple files
     file_data = {"hashes": [], "filenames": []}
     for upload in uploaded_files:
@@ -119,7 +118,7 @@ def upload_file():
             file_data["filenames"] = file_data["filenames"] + [result["filename"]]
 
     response.content_type = "application/json"
-    print(file_data)
+
     return json.dumps(file_data)
 
 
@@ -128,7 +127,7 @@ def upload_file():
 def serve_upload_page():
 
     hashes = request.query.getall("hash")  # Retrieve hashes from URL
-    print(hashes)
+
     return template("upload", file_hashes=hashes)
 
 
@@ -136,27 +135,16 @@ def serve_upload_page():
 def download_file():
 
     page = request.query.get("page")
-    file_hash = request.query.get("hash")
-    print(f"{page=} {file_hash=}")
-    if not file_hash:
+    file_hashes = request.query.get("hashes")
+
+    if not file_hashes:
         return
     if page == "frequency":
 
-        sort_order = request.query.get("file_hash")
-
-        sort_order_map = {
-            "frequency": parser.SortOptions.FREQUENCY,
-            "reverse-frequency": parser.SortOptions.REVERSE_FREQUENCY,
-            "alphabetical": parser.SortOptions.ALPHABETICAL,
-            "reverse-alphabetical": parser.SortOptions.REVERSE_ALPHABETICAL,
-        }
-
-        sort_option = (
-            sort_order_map[sort_order] if sort_order else parser.SortOptions.FREQUENCY
-        )
-        root_file_name = root_file_name_from_hash(file_hash)
-        print(f"{root_file_name=}")
-        frequency = frequency_from_hash(file_hash, sort_option)
+        sort_option = parser.SortOptions.FREQUENCY
+        # root_file_name = root_file_name_from_hash(file_hashe)
+        root_file_name = "output"
+        frequency = frequency_from_hashes(file_hashes, sort_option)
 
         file_path = f"{root_file_name}_frequency.csv"
         with open(f"output/{file_path}", "w", encoding="utf-8") as file:
@@ -173,12 +161,14 @@ def download_file():
         grouped_selection = request.query.get("grouped")
         grouped = True if grouped_selection == "true" else False
 
-        if file_hash:
-            word_data = length_from_hash(file_hash, grouped)
+        if file_hashes:
+            word_data = length_from_hashes(file_hashes, grouped)
         else:
             word_data = {"labels": [], "data": []}
 
-        root_file_name = root_file_name_from_hash(file_hash)
+        root_file_name = root_file_name_from_hash(file_hashes)
+        root_file_name = "output"
+
         file_path = f"{root_file_name}_lengths.png"
 
         plt.bar(word_data["labels"], word_data["data"])
