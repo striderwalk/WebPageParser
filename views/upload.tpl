@@ -126,7 +126,7 @@
         selectedFiles.forEach((file) => formData.append("files", file));
 
         try {
-          // Make the upload request to the correct port (8000)
+          // Make the upload request to the correct port
           const response = await fetch(
             "https://webpageparser.onrender.com/upload",
             {
@@ -161,9 +161,18 @@
       // Function to update navigation links after the upload
       function updateNavLinks(hashes) {
         let links = [
-          { base: "http://0.0.0.0:80/upload", id: "uploadLink" },
-          { base: "http://0.0.0.0:80/frequency", id: "frequencyLink" },
-          { base: "http://0.0.0.0:80/length", id: "lengthLink" },
+          {
+            base: "https://webpageparser.onrender.com/upload",
+            id: "uploadLink",
+          },
+          {
+            base: "https://webpageparser.onrender.com/frequency",
+            id: "frequencyLink",
+          },
+          {
+            base: "https://webpageparser.onrender.com/length",
+            id: "lengthLink",
+          },
         ];
 
         links.forEach((link) => {
