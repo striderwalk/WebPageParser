@@ -177,7 +177,7 @@ def download_file():
         else:
             word_data = {"labels": [], "data": []}
 
-        root_file_name = root_file_name_from_hash(file_hashes)
+        # root_file_name = root_file_name_from_hash(file_hashes)
         root_file_name = "output"
 
         file_path = f"{root_file_name}_lengths.png"
