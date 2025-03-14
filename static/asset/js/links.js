@@ -2,7 +2,7 @@ document.addEventListener("DOMContentLoaded", function () {
   // Function to update all navigation links with the current hash
   function updateNavLinks() {
     console.log("The thing...");
-    const hash = new URLSearchParams(window.location.search).get("hashes"); // Get the hash from the current URL
+    const hashes = new URLSearchParams(window.location.search).get("hashes"); // Get the hash from the current URL
 
     // If there's a hash, update the links
     if (hashes) {
