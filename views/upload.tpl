@@ -127,7 +127,7 @@
 
         try {
           // Make the upload request to the correct port (8000)
-          const response = await fetch("http://localhost:8000/upload", {
+          const response = await fetch("http://0.0.0.0:80/upload", {
             method: "POST",
             body: formData,
           });
@@ -158,9 +158,9 @@
       // Function to update navigation links after the upload
       function updateNavLinks(hashes) {
         let links = [
-          { base: "http://localhost:8000/upload", id: "uploadLink" },
-          { base: "http://localhost:8000/frequency", id: "frequencyLink" },
-          { base: "http://localhost:8000/length", id: "lengthLink" },
+          { base: "http://0.0.0.0:80/upload", id: "uploadLink" },
+          { base: "http://0.0.0.0:80/frequency", id: "frequencyLink" },
+          { base: "http://0.0.0.0:80/length", id: "lengthLink" },
         ];
 
         links.forEach((link) => {

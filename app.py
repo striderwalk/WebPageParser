@@ -185,4 +185,4 @@ if __name__ == "__main__":
 
     PORT = os.environ.get("PORT", "8000")
 
-    run(app, host="localhost", port=int(PORT), debug=True, reloader=True)
+    run(app, host="0.0.0.0", port=int(PORT), debug=True, reloader=True)

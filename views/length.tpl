@@ -84,7 +84,7 @@
       const searchParams = currentUrl.searchParams;
 
       const response = await fetch(
-        "http://localhost:8000/length-data?" + searchParams
+        "http://0.0.0.0:80/length-data?" + searchParams
       );
       const data = await response.json();
       return data;
@@ -156,7 +156,7 @@
 
       // Construct the download link with the query parameters
       const downloadLink = document.getElementById("downloadLink");
-      const baseDownloadUrl = "http://localhost:8000/download"; // Adjust to your server's download URL
+      const baseDownloadUrl = "http://0.0.0.0:80/download"; // Adjust to your server's download URL
 
       // Append the query parameters to the download URL
       downloadLink.href = baseDownloadUrl + queryParams + "&page=lengths";
