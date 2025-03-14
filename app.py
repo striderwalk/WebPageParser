@@ -11,7 +11,6 @@ from bottle import Bottle, request, response, run, static_file, template
 from file_utilities import (
     frequency_from_hashes,
     length_from_hashes,
-    root_file_name_from_hash,
     save_upload,
 )
 
@@ -37,7 +36,6 @@ def send_js(filename):
 
 @app.route("/frequency")
 def frequency():
-
     sort_order = request.query.get("sort_order")
     file_hashes = request.query.get("hashes")
     if not file_hashes:
@@ -61,11 +59,7 @@ def frequency():
         sort_order_map[sort_order] if sort_order else parser.SortOptions.FREQUENCY
     )
 
-    if file_hashes:
-        frequency = frequency_from_hashes(file_hashes, sort_option)
-
-    else:
-        frequency = []
+    frequency = frequency_from_hashes(file_hashes, sort_option) if file_hashes else []
 
     data = {
         "words": [i[0] for i in frequency],
@@ -79,7 +73,6 @@ def frequency():
 
 @app.route("/length")
 def length():
-
     data = {
         "test": "Hello this is a length",
     }
@@ -88,16 +81,16 @@ def length():
 
 @app.route("/length-data")
 def chart_data():
-
     file_hashes = request.query.get("hashes").split(",")
     grouped_selection = request.query.get("grouped")
     grouped = True if grouped_selection == "true" else False
-    print(file_hashes)
-    if file_hashes:
-        word_data = length_from_hashes(file_hashes, grouped)
-    else:
-        word_data = {"labels": [], "data": []}
-    print(word_data)
+
+    word_data = (
+        length_from_hashes(file_hashes, grouped)
+        if file_hashes
+        else {"labels": [], "data": []}
+    )
+
     data = {
         "labels": word_data["labels"],
         "datasets": [
@@ -112,16 +105,13 @@ def chart_data():
     }
     response.content_type = "application/json"
     return data
-    return json.dumps(data)
 
 
 @app.post("/upload")
 def upload_file():
-
     uploaded_files = request.files.getall("files")  # Get multiple files
     file_data = {"hashes": [], "filenames": []}
     for upload in uploaded_files:
-
         if not upload:
             pass
 
@@ -138,68 +128,69 @@ def upload_file():
 @app.route("/")
 @app.get("/upload")
 def serve_upload_page():
-
     hashes = request.query.getall("hash")  # Retrieve hashes from URL
 
     return template("upload", file_hashes=hashes, SERVER_URL=SERVER_URL)
 
 
+def create_frequency_output(file_hashes):
+    sort_option = parser.SortOptions.FREQUENCY
+
+    root_file_name = "output"
+    frequency = frequency_from_hashes(file_hashes, sort_option)
+
+    file_path = f"{root_file_name}_frequency.csv"
+    with open(f"output/{file_path}", "w", encoding="utf-8") as file:
+        file_writer = csv.writer(file, delimiter=",")
+        for line in frequency:
+            file_writer.writerow(line)
+
+    response.headers["Content-Disposition"] = response.headers[
+        "Content-Disposition"
+    ] = "attachment"
+
+    return static_file(file_path, root="./output", download=True)
+
+
+def create_lengths_output(file_hashes):
+    grouped_selection = request.query.get("grouped")
+    grouped = True if grouped_selection == "true" else False
+
+    word_data = (
+        length_from_hashes(file_hashes, grouped)
+        if file_hashes
+        else {"labels": [], "data": []}
+    )
+
+    file_path = "output_lengths.png"
+
+    plt.bar(word_data["labels"], word_data["data"])
+    plt.savefig(f"./output/{file_path}")
+
+    response.headers["Content-Disposition"] = response.headers[
+        "Content-Disposition"
+    ] = "attachment"
+
+    return static_file(file_path, root="./output", download=True)
+
+
 @app.route("/download")
 def download_file():
-
     page = request.query.get("page")
     file_hashes = request.query.get("hashes")
 
     if not file_hashes:
         return
     file_hashes = file_hashes.split(",")
+
     if page == "frequency":
+        return create_frequency_output(file_hashes)
 
-        sort_option = parser.SortOptions.FREQUENCY
-        # root_file_name = root_file_name_from_hash(file_hashe)
-        root_file_name = "output"
-        frequency = frequency_from_hashes(file_hashes, sort_option)
-
-        file_path = f"{root_file_name}_frequency.csv"
-        with open(f"output/{file_path}", "w", encoding="utf-8") as file:
-            file_writer = csv.writer(file, delimiter=",")
-            for line in frequency:
-                file_writer.writerow(line)
-
-        response.headers["Content-Disposition"] = response.headers[
-            "Content-Disposition"
-        ] = "attachment"
-
-        return static_file(file_path, root="./output", download=True)
     elif page == "lengths":
-        grouped_selection = request.query.get("grouped")
-        grouped = True if grouped_selection == "true" else False
-
-        if file_hashes:
-            word_data = length_from_hashes(file_hashes, grouped)
-        else:
-            word_data = {"labels": [], "data": []}
-
-        # root_file_name = root_file_name_from_hash(file_hashes)
-        root_file_name = "output"
-
-        file_path = f"{root_file_name}_lengths.png"
-
-        try:
-            plt.bar(word_data["labels"], word_data["data"])
-            plt.savefig(f"./output/{file_path}")
-
-            response.headers["Content-Disposition"] = response.headers[
-                "Content-Disposition"
-            ] = "attachment"
-
-            return static_file(file_path, root="./output", download=True)
-        except Exception as e:
-            return f"error: {str(e)}"
+        return create_lengths_output(file_hashes)
 
 
 if __name__ == "__main__":
-
     PORT = os.environ.get("PORT", "8000")
     SERVER = os.environ.get("SERVER", "false")
     if SERVER == "false":

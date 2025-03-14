@@ -31,21 +31,10 @@ def get_files_from_hashes(file_hashes):
     return datas
 
 
-def root_file_name_from_hash(file_hash):
-    files = glob.glob("uploads/*")
-
-    for file_path in files:
-        if file_hash in file_path:
-            root = os.path.basename(file_path).replace(f"-{file_hash}", "")
-
-            return root
-
-
 def frequency_from_hashes(file_hashes, sort_option):
     datas = get_files_from_hashes(file_hashes)
     frequencys = []
     for data in datas:
-
         frequencys.extend(parser.HtmlParser(data).get_frequencys(sort_option))
     return frequencys
 
@@ -92,5 +81,4 @@ def save_upload(upload):
         return {"hash": file_hash, "filename": upload.filename}
 
     except Exception as e:
-
         return {"error": f"Server error: {str(e)}"}

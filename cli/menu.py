@@ -4,17 +4,14 @@ from typing import Any
 
 @dataclass
 class MenuOption:
-
     display_name: str
     value: Any
 
 
 class Menu:
-
     def __init__(
         self, options, highlight_last_choice=False, raise_if_invalid_choice=False
     ):
-
         self._options = options
         self._last_choice = 0
 
@@ -22,7 +19,6 @@ class Menu:
         self.highlight_last_choice = highlight_last_choice
 
     def display(self):
-
         print("\nSelect an option:")
         for i, option in enumerate(self._options):
             if self.highlight_last_choice and i == self._last_choice:
@@ -48,7 +44,6 @@ class Menu:
             if choice < 1 or choice > len(self._options):
                 range_error_description = "Selected choice was not one of the options."
                 if self.raise_if_invalid_choice:
-
                     raise ValueError(range_error_description)
                 else:
                     print(range_error_description)
