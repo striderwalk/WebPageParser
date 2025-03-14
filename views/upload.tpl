@@ -127,10 +127,13 @@
 
         try {
           // Make the upload request to the correct port (8000)
-          const response = await fetch("http://0.0.0.0:80/upload", {
-            method: "POST",
-            body: formData,
-          });
+          const response = await fetch(
+            "https://webpageparser.onrender.com/upload",
+            {
+              method: "POST",
+              body: formData,
+            }
+          );
 
           // Check if response was successful
           if (response.ok) {
