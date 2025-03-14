@@ -6,7 +6,7 @@ from matplotlib import pyplot as plt
 import parser
 import sys
 
-from bottle import Bottle, request, response, run, static_file, template, redirect
+from bottle import Bottle, request, response, run, static_file, template
 
 from file_utilities import (
     frequency_from_hashes,
