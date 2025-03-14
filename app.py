@@ -6,11 +6,11 @@ from matplotlib import pyplot as plt
 import parser
 import sys
 
-from bottle import Bottle, request, response, run, static_file, template
+from bottle import Bottle, request, response, run, static_file, template, redirect
 
 from file_utilities import (
-    frequency_from_hash,
-    length_from_hash,
+    frequency_from_hashes,
+    length_from_hashes,
     root_file_name_from_hash,
     save_upload,
 )
@@ -39,8 +39,8 @@ def send_js(filename):
 def frequency():
 
     sort_order = request.query.get("sort_order")
-    file_hash = request.query.get("hash")
-
+    file_hashes = request.query.get("hashes").split(",")
+    print(file_hashes)
     sort_order_map = {
         "frequency": parser.SortOptions.FREQUENCY,
         "reverse-frequency": parser.SortOptions.REVERSE_FREQUENCY,
@@ -52,8 +52,9 @@ def frequency():
         sort_order_map[sort_order] if sort_order else parser.SortOptions.FREQUENCY
     )
 
-    if file_hash:
-        frequency = frequency_from_hash(file_hash, sort_option)
+    if file_hashes:
+        frequency = frequency_from_hashes(file_hashes, sort_option)
+        print(f"{frequency=}")
     else:
         frequency = []
 
@@ -75,14 +76,16 @@ def length():
 @app.route("/length-data")
 def chart_data():
 
-    file_hash = request.query.get("hash")
+    file_hashes = request.query.get("hashes").split(",")
     grouped_selection = request.query.get("grouped")
     grouped = True if grouped_selection == "true" else False
 
-    if file_hash:
-        word_data = length_from_hash(file_hash, grouped)
+    if file_hashes:
+        word_data = length_from_hashes(file_hashes, grouped)
     else:
         word_data = {"labels": [], "data": []}
+
+    print(word_data)
     data = {
         "labels": word_data["labels"],
         "datasets": [
@@ -102,20 +105,31 @@ def chart_data():
 
 @app.post("/upload")
 def upload_file():
+    print("Recived files")
+    uploaded_files = request.files.getall("files")  # Get multiple files
+    file_data = {"hashes": [], "filenames": []}
+    for upload in uploaded_files:
 
-    upload = request.files.get("file")
+        if not upload:
+            pass
 
-    if not upload:
-        response.status = 400
-        return {"error": "No file uploaded"}
+        result = save_upload(upload)
+        if "error" not in result:
+            file_data["hashes"] = file_data["hashes"] + [result["hash"]]
+            file_data["filenames"] = file_data["filenames"] + [result["filename"]]
 
-    return save_upload(upload)
+    response.content_type = "application/json"
+    print(file_data)
+    return json.dumps(file_data)
 
 
 @app.route("/")
 @app.get("/upload")
 def serve_upload_page():
-    return template("upload")
+
+    hashes = request.query.getall("hash")  # Retrieve hashes from URL
+    print(hashes)
+    return template("upload", file_hashes=hashes)
 
 
 @app.route("/download")

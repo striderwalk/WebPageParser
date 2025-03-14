@@ -61,24 +61,19 @@
       <div id="dropZone" class="drop-zone">
         Drag & Drop a file here or
         <span class="text-primary">click to select</span>
-        <input type="file" id="fileInput" class="d-none" />
+        <input type="file" id="fileInput" class="d-none" multiple />
       </div>
 
       <!-- Upload Button -->
-      <button class="btn btn-primary w-100 mt-3" id="uploadBtn" disabled>
-        Upload
-      </button>
 
       <div id="hashDisplay" class="alert alert-success mt-3 d-none">
         <strong>File Uploaded:</strong> <span id="fileName"></span>
       </div>
     </div>
-
     <script>
       const dropZone = document.getElementById("dropZone");
       const fileInput = document.getElementById("fileInput");
-      const uploadBtn = document.getElementById("uploadBtn");
-      let selectedFile = null;
+      let selectedFiles = [];
 
       // Handle Drag Over
       dropZone.addEventListener("dragover", (event) => {
@@ -96,9 +91,9 @@
         dropZone.classList.remove("dragover");
 
         if (event.dataTransfer.files.length > 0) {
-          selectedFile = event.dataTransfer.files[0];
-          dropZone.innerHTML = `<strong>${selectedFile.name}</strong> selected`;
-          uploadBtn.disabled = false;
+          selectedFiles = Array.from(event.dataTransfer.files);
+          updateFileList();
+          uploadFiles();
         }
       });
 
@@ -109,18 +104,26 @@
 
       fileInput.addEventListener("change", (event) => {
         if (event.target.files.length > 0) {
-          selectedFile = event.target.files[0];
-          dropZone.innerHTML = `<strong>${selectedFile.name}</strong> selected`;
-          uploadBtn.disabled = false;
+          selectedFiles = Array.from(event.target.files);
+          updateFileList();
+          uploadFiles();
         }
       });
 
+      // Function to update file list display
+      function updateFileList() {
+        dropZone.innerHTML =
+          selectedFiles
+            .map((file) => `<strong>${file.name}</strong>`)
+            .join(", ") + " selected";
+      }
+
       // Handle File Upload
-      uploadBtn.addEventListener("click", async () => {
-        if (!selectedFile) return alert("No file selected!");
+      async function uploadFiles() {
+        if (selectedFiles.length === 0) return alert("No files selected!");
 
         const formData = new FormData();
-        formData.append("file", selectedFile);
+        selectedFiles.forEach((file) => formData.append("files", file));
 
         try {
           // Make the upload request to the correct port (8000)
@@ -132,14 +135,16 @@
           // Check if response was successful
           if (response.ok) {
             const data = await response.json();
-            if (data.hash) {
-              // Update the hash display
-              document.getElementById("fileName").textContent = data.filename;
-              document.getElementById("hashDisplay").classList.remove("d-none");
+            console.log(data);
 
-              // Call function to update nav links
-              updateNavLinks(data.hash);
-            }
+            updateNavLinks(data.hashes); // Use the first file's hash for navigation
+
+            document.getElementById("hashDisplay").classList.remove("d-none");
+
+            // Display uploaded file names and hashes
+            document.getElementById("fileName").innerHTML = data.filenames
+              .map((file, index) => `<div>${file} </div>`)
+              .join("");
           } else {
             console.error("Upload failed:", response.statusText);
             alert("Upload failed. Please try again.");
@@ -148,31 +153,21 @@
           console.error("Error during upload:", error);
           alert("Upload failed. Please try again.");
         }
-      });
+      }
 
       // Function to update navigation links after the upload
-      function updateNavLinks(hash) {
+      function updateNavLinks(hashes) {
         let links = [
           { base: "http://localhost:8000/upload", id: "uploadLink" },
           { base: "http://localhost:8000/frequency", id: "frequencyLink" },
           { base: "http://localhost:8000/length", id: "lengthLink" },
         ];
 
-        // Update the href of each link with the hash
         links.forEach((link) => {
-          // Check if link.base and link.id are defined
           if (link.base && link.id) {
-            let url = link.base;
-
-            // Add hash to the URL
-            if (url.includes("?")) {
-              url += `&hash=${hash}`;
-            } else {
-              url += `?hash=${hash}`;
-            }
-
-            // Update the link's href if the element is found
-            console.log(link.id);
+            let url = link.base.includes("?")
+              ? `${link.base}&hashes=${hashes}`
+              : `${link.base}?hashes=${hashes}`;
             const linkElement = document.getElementById(link.id);
             if (linkElement) {
               linkElement.href = url;

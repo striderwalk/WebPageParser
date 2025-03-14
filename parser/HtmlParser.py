@@ -95,14 +95,11 @@ class HtmlParser:
         length_counts = sorted(length_counts.items(), key=lambda x: x[0])
 
         if not grouped:
-            return {
-                "labels": [int(i[0]) for i in length_counts],
-                "data": [int(i[1]) for i in length_counts],
-            }
+            return {int(i[0]): int(i[1]) for i in length_counts}
         else:
-            groups = ["1-3", "4-6", "7-10", "10+"]
+            bin_names = ["1-3", "4-6", "7-10", "10+"]
             word_lengths = np.array(word_lengths)
-            bins = [
+            data = [
                 len(word_lengths[word_lengths <= 3]),
                 len(
                     word_lengths[word_lengths <= 6][
@@ -117,10 +114,7 @@ class HtmlParser:
                 len(word_lengths[word_lengths > 10]),
             ]
 
-            return {
-                "labels": groups,
-                "data": bins,
-            }
+            return {bin_name: data for bin_name, data in zip(bin_names, data)}
 
     def __repr__(self):
         return f"HTMLparser('{self.file_path}')"

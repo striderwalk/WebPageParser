@@ -204,6 +204,6 @@
       };
     </script>
 
-    <script src="static/links.js"></script>
+    <script src="links.js"></script>
   </body>
 </html>
