@@ -181,7 +181,7 @@ def download_file():
         root_file_name = "output"
 
         file_path = f"{root_file_name}_lengths.png"
-        print(f"{len(word_data['labels'])=} {len(word_data['data'])=}")
+        return f"{len(word_data['labels'])=} {len(word_data['data'])=}"
 
         try:
             plt.bar(word_data["labels"], word_data["data"])
