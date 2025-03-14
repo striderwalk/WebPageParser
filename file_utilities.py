@@ -9,7 +9,7 @@ UPLOAD_FOLDER = "uploads"
 
 
 def get_files_from_hashes(file_hashes):
-    if any(len(file_hash) < 256 for file_hash in file_hashes):
+    if any(len(file_hash) < 64 for file_hash in file_hashes):
         raise ValueError("Invalid file hash")
 
     files = glob.glob("uploads/*")
