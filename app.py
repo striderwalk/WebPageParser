@@ -181,15 +181,19 @@ def download_file():
         root_file_name = "output"
 
         file_path = f"{root_file_name}_lengths.png"
-        print(f"{len(word_data["labels"])=} {len(word_data["data"])=}")
-        plt.bar(word_data["labels"], word_data["data"])
-        plt.savefig(f"./output/{file_path}")
+        print(f"{len(word_data['labels'])=} {len(word_data['data'])=}")
 
-        response.headers["Content-Disposition"] = response.headers[
-            "Content-Disposition"
-        ] = "attachment"
+        try:
+            plt.bar(word_data["labels"], word_data["data"])
+            plt.savefig(f"./output/{file_path}")
 
-        return static_file(file_path, root="./output", download=True)
+            response.headers["Content-Disposition"] = response.headers[
+                "Content-Disposition"
+            ] = "attachment"
+
+            return static_file(file_path, root="./output", download=True)
+        except Exception as e:
+            return f"error: {str(e)}"
 
 
 if __name__ == "__main__":
