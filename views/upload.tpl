@@ -127,13 +127,10 @@
 
         try {
           // Make the upload request to the correct port
-          const response = await fetch(
-            "https://webpageparser.onrender.com/upload",
-            {
-              method: "POST",
-              body: formData,
-            }
-          );
+          const response = await fetch("{{ SERVER_URL }}/upload", {
+            method: "POST",
+            body: formData,
+          });
 
           // Check if response was successful
           if (response.ok) {
@@ -162,15 +159,15 @@
       function updateNavLinks(hashes) {
         let links = [
           {
-            base: "https://webpageparser.onrender.com/upload",
+            base: "{{ SERVER_URL }}/upload",
             id: "uploadLink",
           },
           {
-            base: "https://webpageparser.onrender.com/frequency",
+            base: "{{ SERVER_URL }}/frequency",
             id: "frequencyLink",
           },
           {
-            base: "https://webpageparser.onrender.com/length",
+            base: "{{ SERVER_URL }}/length",
             id: "lengthLink",
           },
         ];

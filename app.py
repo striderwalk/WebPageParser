@@ -43,10 +43,8 @@ def frequency():
     if not file_hashes:
         return template(
             "frequency",
-            data={
-                "words": [],
-                "frequency": [],
-            },
+            data={"words": [], "frequency": []},
+            SERVER_URL=SERVER_URL,
             root=dirname + "/veiws",
         )
 
@@ -74,14 +72,18 @@ def frequency():
         "frequency": [i[1] for i in frequency],
     }
 
-    return template("frequency", data=data, root=dirname + "/veiws")
+    return template(
+        "frequency", data=data, SERVER_URL=SERVER_URL, root=dirname + "/veiws"
+    )
 
 
 @app.route("/length")
 def length():
 
-    data = {"test": "Hello this is a length"}
-    return template("length", data=data)
+    data = {
+        "test": "Hello this is a length",
+    }
+    return template("length", data=data, SERVER_URL=SERVER_URL)
 
 
 @app.route("/length-data")
@@ -90,12 +92,12 @@ def chart_data():
     file_hashes = request.query.get("hashes").split(",")
     grouped_selection = request.query.get("grouped")
     grouped = True if grouped_selection == "true" else False
-
+    print(file_hashes)
     if file_hashes:
         word_data = length_from_hashes(file_hashes, grouped)
     else:
         word_data = {"labels": [], "data": []}
-
+    print(word_data)
     data = {
         "labels": word_data["labels"],
         "datasets": [
@@ -139,7 +141,7 @@ def serve_upload_page():
 
     hashes = request.query.getall("hash")  # Retrieve hashes from URL
 
-    return template("upload", file_hashes=hashes)
+    return template("upload", file_hashes=hashes, SERVER_URL=SERVER_URL)
 
 
 @app.route("/download")
@@ -199,5 +201,10 @@ def download_file():
 if __name__ == "__main__":
 
     PORT = os.environ.get("PORT", "8000")
-
-    run(app, host="0.0.0.0", port=int(PORT), debug=True, reloader=True)
+    SERVER = os.environ.get("SERVER", "false")
+    if SERVER == "false":
+        SERVER_URL = f"http://localhost:{PORT}"
+        run(app, host="localhost", port=int(PORT), debug=True, reloader=True)
+    else:
+        SERVER_URL = "https://webpageparser.onrender.com"
+        run(app, host="0.0.0.0", port=int(PORT), debug=True, reloader=True)

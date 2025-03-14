@@ -84,7 +84,7 @@
       const searchParams = currentUrl.searchParams;
 
       const response = await fetch(
-        "https://webpageparser.onrender.com/length-data?" + searchParams
+        "{{ SERVER_URL }}/length-data?" + searchParams
       );
       const data = await response.json();
       return data;
@@ -156,7 +156,7 @@
 
       // Construct the download link with the query parameters
       const downloadLink = document.getElementById("downloadLink");
-      const baseDownloadUrl = "https://webpageparser.onrender.com/download"; // Adjust to your server's download URL
+      const baseDownloadUrl = "{{ SERVER_URL }}/download"; // Adjust to your server's download URL
 
       // Append the query parameters to the download URL
       downloadLink.href = baseDownloadUrl + queryParams + "&page=lengths";

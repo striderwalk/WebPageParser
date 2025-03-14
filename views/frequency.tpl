@@ -197,7 +197,7 @@
 
         // Construct the download link with the query parameters
         const downloadLink = document.getElementById("downloadLink");
-        const baseDownloadUrl = "https://webpageparser.onrender.com/download"; // Adjust to your server's download URL
+        const baseDownloadUrl = "{{ SERVER_URL }}/download"; // Adjust to your server's download URL
 
         // Append the query parameters to the download URL
         downloadLink.href = baseDownloadUrl + queryParams + "&page=frequency";
