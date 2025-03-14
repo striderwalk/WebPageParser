@@ -183,4 +183,6 @@ def download_file():
 
 if __name__ == "__main__":
 
-    run(app, host="localhost", port=8000, debug=True, reloader=True)
+    PORT = os.environ.get("PORT", "8000")
+
+    run(app, host="localhost", port=int(PORT), debug=True, reloader=True)
