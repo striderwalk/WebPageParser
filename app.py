@@ -109,7 +109,7 @@ def chart_data():
         ],
     }
     response.content_type = "application/json"
-
+    return data
     return json.dumps(data)
 
 
