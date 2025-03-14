@@ -150,6 +150,7 @@ def download_file():
 
     if not file_hashes:
         return
+    file_hashes = file_hashes.split(",")
     if page == "frequency":
 
         sort_option = parser.SortOptions.FREQUENCY
