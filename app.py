@@ -39,7 +39,18 @@ def send_js(filename):
 def frequency():
 
     sort_order = request.query.get("sort_order")
-    file_hashes = request.query.get("hashes").split(",")
+    file_hashes = request.query.get("hashes")
+    if not file_hashes:
+        return template(
+            "frequency",
+            data={
+                "words": [],
+                "frequency": [],
+            },
+            root=dirname + "/veiws",
+        )
+
+    file_hashes = file_hashes.split(",")
 
     sort_order_map = {
         "frequency": parser.SortOptions.FREQUENCY,
@@ -170,7 +181,7 @@ def download_file():
         root_file_name = "output"
 
         file_path = f"{root_file_name}_lengths.png"
-
+        print(f"{len(word_data["labels"])=} {len(word_data["data"])=}")
         plt.bar(word_data["labels"], word_data["data"])
         plt.savefig(f"./output/{file_path}")
 
